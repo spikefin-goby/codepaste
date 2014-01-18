@@ -28,7 +28,11 @@ $app->post('/paste', function (Request $request) use ($app) {
     }
 
     $hash = md5($code);
-    
+    $save_directory = __DIR__ . '/../var/' . substr($hash, 0, 3);
+    mkdir($save_directory, 0777, true);
+    file_put_contents($save_directory . '/' . $hash, $code);
+
+    return $app->redirect('/show/' . $hash);
 
 });
 
@@ -37,8 +41,14 @@ $app->post('/paste', function (Request $request) use ($app) {
  */
 $app->get('/show/{hash}', function ($hash) use ($app) {
     $pygments = new Pygments();
-    $code = file_get_contents('/Users/hirose/github/codepaste/webroot/index.php');
-    $code_highlight = $pygments->highlight($code, null, 'html', array('linenos' => 1));
+
+    $file_path = __DIR__ . '/../var/' . substr($hash, 0, 3) . '/' . $hash;
+    if (!file_exists($file_path)) {
+        return new Response('Missing code.', 400);
+    }
+
+    $code = file_get_contents($file_path);
+    $code_highlight = $pygments->highlight($code, null, 'html', array('linenos' => 1, 'encoding' => 'utf8'));
 
     return $app['twig']->render('codepaste/show.html.twig', array(
         'code_highlight' => $code_highlight,
