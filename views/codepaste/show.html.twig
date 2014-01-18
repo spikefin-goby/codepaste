@@ -1,0 +1,15 @@
+{% extends "/layout.html.twig" %}
+
+
+{% block content %}
+<div class="container">
+{{ code_highlight | raw }}
+</div> <!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="{{ app.request.basePath }}/assets/js/bootstrap.min.js"></script>
+{% endblock %}
